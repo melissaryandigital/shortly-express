@@ -87,15 +87,22 @@ app.get('/signup',
 
 app.post('/signup', (req, res, next) => {
 
-  var user = { 'username': req.body.username, 'password': req.body.password };
-  models.Users.create(user)
-    .then(result => res.send())
-    .catch(err => alert(err));
+  var username = { 'username': req.body.username };
+  var password = { 'password': req.body.password };
 
+  return models.Users.get(username)
+    .then(user => {
+      if (user) {
+        res.redirect('/signup');
+      } else {
+        return models.Users.create({ 'username': req.body.username, 'password': req.body.password })
+          .then(result => res.redirect('/'))
+          .catch(err => res.status(500).send(err));
+      }
+    });
 });
 
-
-// Login
+// Login Post Method
 
 app.get('/login',
   (req, res) => {
@@ -105,17 +112,10 @@ app.get('/login',
 
 app.post('/login', (req, res, next) => {
 
-  // Lookup user, get password and salt
-  // Use SQL - from users table, where username = whatever came from request
-  // need password and salt
-
-  console.log(req.body);
-
   var attempted = req.body.password;
 
   models.Users.get({ 'username': req.body.username })
     .then(user => {
-      console.log(user);
       if (models.Users.compare(attempted, user.password, user.salt)) {
         res.status(200);
         res.render('index');

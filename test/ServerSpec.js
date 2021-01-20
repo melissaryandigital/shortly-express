@@ -6,7 +6,7 @@ var httpMocks = require('node-mocks-http');
 var app = require('../server/app.js');
 var schema = require('../server/db/config.js');
 var port = 4568;
-console.log(mysql);
+
 /************************************************************/
 // Mocha doesn't have a way to designate pending before blocks.
 // Mimic the behavior of xit and xdescribe with xbeforeEach.
@@ -39,12 +39,11 @@ describe('', function () {
     /* TODO: Update user and password if different than on your local machine            */
     /*************************************************************************************/
     db = mysql.createConnection({
-      user: 'newuser',
+      user: 'root',
       password: '',
       database: 'shortly'
     });
 
-    console.log('YAAA' + db);
     /**************************************************************************************/
     /* TODO: If you create a new MySQL tables, add it to the tablenames collection below. */
     /**************************************************************************************/
@@ -61,11 +60,10 @@ describe('', function () {
 
     afterEach(function () { server.close(); });
   });
-  //console.log('HHIHIHI' + db);
+
   describe('Database Schema:', function () {
     it('contains a users table', function (done) {
       var queryString = 'SELECT * FROM users';
-      // console.log('yooooo' + db);
       db.query(queryString, function (err, results) {
         if (err) { return done(err); }
 
@@ -125,7 +123,7 @@ describe('', function () {
     });
   });
 
-  xdescribe('Account Creation:', function () {
+  describe('Account Creation:', function () {
 
     it('signup creates a new user record', function (done) {
       var options = {
