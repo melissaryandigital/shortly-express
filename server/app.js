@@ -112,28 +112,24 @@ app.get('/login',
 
 app.post('/login', (req, res, next) => {
 
+
+  //var username = { 'username': req.body.username };
+  //var password = { 'password': req.body.password };
+
   var attempted = req.body.password;
+
 
   models.Users.get({ 'username': req.body.username })
     .then(user => {
+      console.log(user);
       if (models.Users.compare(attempted, user.password, user.salt)) {
         res.status(200);
-        res.render('index');
+        res.redirect('/');
       }
     })
     .error(error => {
       res.status(500).send(error);
     });
-
-
-  // var attempted = req.body.password;
-  // var salt = `SELECT salt FROM users WHERE username = ${req.body.username};`;
-  // var password = `SELECT password FROM users WHERE username = ${req.body.username};`;
-
-  // This does not return a promise
-  // models.Users.compare(attempted, password, salt)
-  //   .then(result => res.send())
-  //   .catch(err => alert(err));
 });
 
 
