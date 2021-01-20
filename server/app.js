@@ -80,8 +80,14 @@ app.post('/links',
 
 // Signup Post Method
 
+app.get('/signup',
+  (req, res) => {
+    res.render('signup');
+  });
+
 app.post('/signup', (req, res, next) => {
 
+  var user = { 'username': req.body.username, 'password': req.body.password };
   models.Users.create(user)
     .then(result => res.send())
     .catch(err => alert(err));
@@ -91,19 +97,43 @@ app.post('/signup', (req, res, next) => {
 
 // Login
 
+app.get('/login',
+  (req, res) => {
+    res.render('login');
+  });
+
+
 app.post('/login', (req, res, next) => {
 
   // Lookup user, get password and salt
   // Use SQL - from users table, where username = whatever came from request
   // need password and salt
 
-  var attempted = req.body.password;
-  var salt = `SELECT salt FROM users WHERE username = ${request.body.username};`;
-  var password = `SELECT password FROM users WHERE username = ${request.body.username};`;
+  console.log(req.body);
 
-  models.Users.compare(attempted, password, salt)
-    .then(result => res.send())
-    .catch(err => alert(err));
+  var attempted = req.body.password;
+
+  models.Users.get({ 'username': req.body.username })
+    .then(user => {
+      console.log(user);
+      if (models.Users.compare(attempted, user.password, user.salt)) {
+        res.status(200);
+        res.render('index');
+      }
+    })
+    .error(error => {
+      res.status(500).send(error);
+    });
+
+
+  // var attempted = req.body.password;
+  // var salt = `SELECT salt FROM users WHERE username = ${req.body.username};`;
+  // var password = `SELECT password FROM users WHERE username = ${req.body.username};`;
+
+  // This does not return a promise
+  // models.Users.compare(attempted, password, salt)
+  //   .then(result => res.send())
+  //   .catch(err => alert(err));
 });
 
 
