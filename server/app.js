@@ -3,6 +3,7 @@ const path = require('path');
 const utils = require('./lib/hashUtils');
 const partials = require('express-partials');
 const bodyParser = require('body-parser');
+//const parseCookies = require('./middleware/cookieParser.js');
 const Auth = require('./middleware/auth');
 const models = require('./models');
 
@@ -14,6 +15,7 @@ app.use(partials());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
+//app.use(parseCookies());
 
 
 

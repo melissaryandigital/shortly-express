@@ -14,27 +14,31 @@ const parseCookies = (req, res, next) => {
 
   var cookieString = req.headers;
 
+  console.log('COOKIESTRING', cookieString);
   //if the header is not empty
   if (Object.keys(cookieString).length) {
+    //convert the cookieString.cookie to an array
     var stringArray = cookieString.cookie.split('; ');
 
-    req.headers.cookies = {};
+    req.cookies = {};
+    //console.log('STRINGARRAY', stringArray);
 
-    var parsedCookies = stringArray.map((cookie) => {
+    //iterate over the string array and add each item to the req.body.cookies object
+    for (var i = 0; i < stringArray.length; i++) {
       //find the index of the equal sign
-      var equalIndex = cookie.indexOf('=');
+      var equalIndex = stringArray[i].indexOf('=');
       //create key up to equal sign
-      var key = cookie.slice(0, equalIndex);
+      var key = stringArray[i].slice(0, equalIndex);
       //create value after equal sign
-      var value = cookie.slice(equalIndex + 1);
+      var value = stringArray[i].slice(equalIndex + 1);
       //add to object
-      req.headers.cookies[key] = value;
-    });
-
+      req.cookies[key] = value;
+    }
   } else {
-    req.headers.cookies = {};
+    req.cookies = {};
   }
 
+  next();
 };
 
 module.exports = parseCookies;
