@@ -119,16 +119,21 @@ app.post('/login', (req, res, next) => {
   var attempted = req.body.password;
 
 
-  models.Users.get({ 'username': req.body.username })
+  return models.Users.get({ 'username': req.body.username })
     .then(user => {
-      console.log(user);
-      if (models.Users.compare(attempted, user.password, user.salt)) {
-        res.status(200);
-        res.redirect('/');
+      //if the user does exist
+      if (user) {
+        //check if passwords match, then redirect to the index page
+        if (models.Users.compare(attempted, user.password, user.salt)) {
+          res.status(200);
+          res.redirect('/');
+          //if the passwords don't match
+        } else {
+          res.redirect('/login');
+        }
+      } else {
+        res.redirect('/login');
       }
-    })
-    .error(error => {
-      res.status(500).send(error);
     });
 });
 
