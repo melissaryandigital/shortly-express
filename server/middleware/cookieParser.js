@@ -14,7 +14,7 @@ const parseCookies = (req, res, next) => {
 
   var cookieString = req.headers;
 
-  console.log('COOKIESTRING', cookieString);
+  //console.log('COOKIESTRING', cookieString);
   //if the header is not empty
   if (Object.keys(cookieString).length) {
     //convert the cookieString.cookie to an array
