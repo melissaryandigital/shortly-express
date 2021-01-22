@@ -4,32 +4,50 @@ const Promise = require('bluebird');
 module.exports.createSession = (req, res, next) => {
 
   // Check if request has cookies
-  // If cookies, middleware checks if valid - if session stored in database
-  //assigns an object to a session property on the request that contains username and userId
-  // If not valid - session not in database
-  //then...
+  if (Object.keys(req.cookies).length > 0) {
+    // If cookies, middleware checks if valid - if session stored in database
+    //assigns an object to a session property on the request that contains username and userId
 
-  //if request does not have cookies
-  if (Object.keys(req.cookies).length === 0) {
-    //create the session obj on the request
-    req.session = {};
-    req.session.hash = {};
+    console.log('REQ.COOKIES.SHORTLY', req.cookies.shortlyid);
+
+    return models.Sessions.get({ 'hash': req.cookies.shortlyid })
+      .then(data => {
+        console.log('DATA', data);
+        req.session = {
+          'hash': data.hash,
+          'userId': data.userId
+        };
+        //get userName on the users table using the userId
+        // return models.Users.get({ 'id': data.userId })
+        //   .then(user => {
+        //     console.log('USER', user);
+        //     req.session = {
+        //       'username': user.username
+        //     };
+        //   });
+        next();
+      })
+      // if session is invalid
+      .catch();
+
+    //else - request does not have cookies
+  } else {
     //create new session with unique hash
     models.Sessions.create()
-      .then(hash => {
-        console.log('REQUEST ' , req);
-        console.log('HASH', hash);
-        req.session = { 'hash': hash};
-        res.cookie('shortlyid', req.session.hash);
+      .then(data => {
+        //retrieve the sessions data using the id
+        models.Sessions.get({ 'id': data.insertId })
+          //set req.session to what is returned in the get function
+          .then(record => {
+            req.session = { 'hash': record.hash };
+            //set a new cookie in the response headers
+            res.cookie('shortlyid', req.session.hash);
+            //console.log('RES', res);
+            next();
+          });
       });
-    //store ^ in the sessions database using hash and userId
-    //.then(hash => models.Sessions.update({'hash': hash, 'userId': hash.insertId }));
-    //set a new cookie in the response headers
-    //^add it to response the server sends back after requests
-    console.log('RESPONSE', res);
   }
 
-  next();
 };
 
 /************************************************************/
