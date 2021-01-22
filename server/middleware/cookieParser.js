@@ -1,4 +1,4 @@
-const parseCookies = (req, res, next) => {
+module.exports.parseCookies = (req, res, next) => {
 
   // Look at the request object
   // Parse this into an object
@@ -41,4 +41,4 @@ const parseCookies = (req, res, next) => {
   next();
 };
 
-module.exports = parseCookies;
+//module.exports = parseCookies;

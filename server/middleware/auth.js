@@ -8,27 +8,22 @@ module.exports.createSession = (req, res, next) => {
     // If cookies, middleware checks if valid - if session stored in database
     //assigns an object to a session property on the request that contains username and userId
 
-    console.log('REQ.COOKIES.SHORTLY', req.cookies.shortlyid);
+    //console.log('REQ.COOKIES.SHORTLY', req.cookies.shortlyid);
 
     return models.Sessions.get({ 'hash': req.cookies.shortlyid })
       .then(data => {
         console.log('DATA', data);
-        req.session = {
-          'hash': data.hash,
-          'userId': data.userId
-        };
-        //get userName on the users table using the userId
-        // return models.Users.get({ 'id': data.userId })
-        //   .then(user => {
-        //     console.log('USER', user);
-        //     req.session = {
-        //       'username': user.username
-        //     };
-        //   });
+        req.session = data;
+        console.log(req.session);
         next();
       })
       // if session is invalid
-      .catch();
+      //clears and reassigns a new cookie
+      .catch(() => {
+        res.clearCookie('shortlyid');
+        //possibly reassign the cookie?
+        next();
+      });
 
     //else - request does not have cookies
   } else {
