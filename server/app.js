@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(ParseCookies);
-app.use(Auth);
+app.use(Auth.createSession);
 
 
 
@@ -115,21 +115,25 @@ app.get('/login',
 
 app.post('/login', (req, res, next) => {
 
-
-  //var username = { 'username': req.body.username };
-  //var password = { 'password': req.body.password };
-
   var attempted = req.body.password;
 
 
   return models.Users.get({ 'username': req.body.username })
     .then(user => {
       //if the user does exist
+
       if (user) {
         //check if passwords match, then redirect to the index page
         if (models.Users.compare(attempted, user.password, user.salt)) {
-          res.status(200);
-          res.redirect('/');
+
+          console.log('USERID ', user.id);
+          console.log('REQ', req.session);
+
+          return models.Sessions.update({ 'id': req.session.id }, { 'userId': user.id })
+            .then(() => {
+              res.status(200).redirect('/');
+            });
+
           //if the passwords don't match
         } else {
           res.redirect('/login');

@@ -1,4 +1,4 @@
-module.exports.parseCookies = (req, res, next) => {
+const parseCookies = (req, res, next) => {
 
   // Look at the request object
   // Parse this into an object
@@ -12,15 +12,15 @@ module.exports.parseCookies = (req, res, next) => {
   //shortlyid=18ea4fb6ab3178092ce936c591ddbb90c99c9f66;
   // req.cookies = {'shortlyid:' '18ea4fb6ab3178092ce936c591ddbb90c99c9f66'}
 
-  var cookieString = req.headers;
+  var cookieString = req.get('Cookie');
 
   //console.log('COOKIESTRING', cookieString);
   //if the header is not empty
-  if (Object.keys(cookieString).length) {
+  if (cookieString) {
     //convert the cookieString.cookie to an array
-    var stringArray = cookieString.cookie.split('; ');
+    var stringArray = cookieString.split('; ');
 
-    req.cookies = {};
+    //req.cookies = {};
     //console.log('STRINGARRAY', stringArray);
 
     //iterate over the string array and add each item to the req.body.cookies object
@@ -41,4 +41,4 @@ module.exports.parseCookies = (req, res, next) => {
   next();
 };
 
-//module.exports = parseCookies;
+module.exports = parseCookies;
