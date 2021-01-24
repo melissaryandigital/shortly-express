@@ -26,7 +26,6 @@ const parseCookies = (req, res, next) => {
       var equalIndex = stringArray[i].indexOf('=');
       //create key up to equal sign
       var key = stringArray[i].slice(0, equalIndex);
-      console.log('KEY ', key);
       //create value after equal sign
       var value = stringArray[i].slice(equalIndex + 1);
       //add to object

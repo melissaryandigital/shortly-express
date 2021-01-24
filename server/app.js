@@ -91,6 +91,11 @@ app.post('/signup', (req, res, next) => {
   var username = { 'username': req.body.username };
   var password = { 'password': req.body.password };
 
+  if (req.body.password === '') {
+    res.redirect('/signup');
+    return;
+  }
+
   return models.Users.get(username)
     .then(user => {
       if (user) {
@@ -100,8 +105,8 @@ app.post('/signup', (req, res, next) => {
           .then((results) => {
             return models.Sessions.update({ hash: req.session.hash }, { userId: results.insertId });
           })
-          .then(() => res.redirect('/'));
-        //.catch(err => res.status(500).send(err));
+          .then(() => res.redirect('/'))
+          .catch(err => res.status(500).send(err));
       }
     });
 });

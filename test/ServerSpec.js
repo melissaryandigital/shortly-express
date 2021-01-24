@@ -147,6 +147,52 @@ describe('', function () {
       });
     });
 
+    /*
+    New Test
+    */
+    it('signup throws error username greater than 40 chars', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/signup',
+        'json': {
+          'username': 'hellomynameisjasonmypartnernameismelissatodayissunday',
+          'password': 'Samantha'
+        }
+      };
+
+      request(options, function (error, res, body) {
+        var queryString = 'SELECT * FROM users where username = ""';
+        db.query(queryString, function (err, rows) {
+          if (err) { done(err); }
+          var user = rows[0];
+          expect(user).to.not.exist;
+          done();
+        });
+      });
+    });
+
+    /*
+    New Test
+    */
+    it('signup does not allow an empty password', function (done) {
+      var options = {
+        'method': 'POST',
+        'uri': 'http://127.0.0.1:4568/signup',
+        'json': {
+          'username': 'Samantha',
+          'password': ''
+        }
+      };
+
+      request(options, function (error, res, body) {
+        if (error) { return done(error); }
+        //var queryString = 'SELECT password FROM users where username = "Samantha"';
+        expect(res.headers.location).to.equal('/signup');
+        done();
+      });
+    });
+
+
     it('does not store the user\'s original text password', function (done) {
       var options = {
         'method': 'POST',
@@ -417,6 +463,33 @@ describe('', function () {
           });
         });
       });
+
+      /* New Test */
+
+      it('assigns a session object to the request if a session is invalid', function (done) {
+
+        var requestWithoutCookie = httpMocks.createRequest();
+        var response = httpMocks.createResponse();
+
+        createSession(requestWithoutCookie, response, function () {
+          var cookie = response.cookies.shortlyid.value;
+          var secondResponse = httpMocks.createResponse();
+          var requestWithCookies = httpMocks.createRequest();
+          requestWithCookies.cookies.shortlyid = cookie;
+
+          createSession(requestWithCookies, secondResponse, function () {
+            var session = { id: 3, hash: 98239472398493874, userId: null };
+            expect(session).to.be.an('object');
+            expect(session.hash).to.exist;
+            expect(session.hash).to.not.be.cookie;
+            done();
+          });
+        });
+      });
+
+      /**/
+
+
 
       it('creates a new hash for each new session', function (done) {
         var requestWithoutCookies = httpMocks.createRequest();
